@@ -61,6 +61,7 @@ jobs:
         host: ${{ secrets.REMOTE_HOST }}
         username: ${{ secrets.REMOTE_USER }}
         envs: LOGIN,NAME,VERSION
+        debug: true
         script: |
           docker pull $LOGIN/$NAME:$VERSION
           docker stop grpc-broker || true
