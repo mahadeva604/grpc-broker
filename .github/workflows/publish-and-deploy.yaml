@@ -49,22 +49,15 @@ jobs:
   deploy:
     needs: [build_and_pub]
     runs-on: ubuntu-latest
-    env:
-      LOGIN: ${{ secrets.DOCKER_LOGIN }}
-      NAME: ${{ secrets.DOCKER_NAME }}
     steps:
-    - name: Install SSH key
-      uses: shimataro/ssh-key-action@v2
+    - name: Deploy new docker image
+      uses: appleboy/ssh-action@v0.1.10
       with:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        known_hosts: ${{ secrets.KNOWN_HOSTS }}
-        if_key_exists: fail
-    - name: Deploy new docker image
-      run: >
-        ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}
-        '
-        docker pull ${{ secrets.DOCKER_LOGIN }}/${{ secrets.DOCKER_NAME }}:${GITHUB_REF:11};
-        docker stop grpc-broker;
-        docker rm grpc-broker;
-        docker run --name=grpc-broker --restart=always -p 8086:8086 -d ${{ secrets.DOCKER_LOGIN }}/${{ secrets.DOCKER_NAME }}:${GITHUB_REF:11};
-        '
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USER }}
+        script: |
+          docker pull ${{ secrets.DOCKER_LOGIN }}/${{ secrets.DOCKER_NAME }}:${GITHUB_REF:11}
+          docker stop grpc-broker
+          docker rm grpc-broker
+          docker run --name=grpc-broker --restart=always -p 8086:8086 -d ${{ secrets.DOCKER_LOGIN }}/${{ secrets.DOCKER_NAME }}:${GITHUB_REF:11}
