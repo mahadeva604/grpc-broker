@@ -41,10 +41,18 @@ jobs:
       - name: Login to docker.io
         run:  echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
       - uses: actions/checkout@v3
-      - name: Build image
+      - name: Build grpc-broker image
         run: docker build -t $LOGIN/$NAME:${GITHUB_REF:11} -f Dockerfile .
-      - name: Push image to docker.io
+      - name: Push grpc-broker image to docker.io
         run: docker push $LOGIN/$NAME:${GITHUB_REF:11}
+      - name: Build grpc-broker-consumer image
+        run: docker build -t $LOGIN/$NAME-consumer:${GITHUB_REF:11} -f Dockerfile-consumer .
+      - name: Push grpc-broker-consumer image to docker.io
+        run: docker push $LOGIN/$NAME-consumer:${GITHUB_REF:11}
+      - name: Build grpc-broker-producer image
+        run: docker build -t $LOGIN/$NAME-producer:${GITHUB_REF:11} -f Dockerfile-producer .
+      - name: Push grpc-broker-producer image to docker.io
+        run: docker push $LOGIN/$NAME-producer:${GITHUB_REF:11}
   
   deploy:
     needs: [build_and_pub]
