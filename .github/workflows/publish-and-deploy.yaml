@@ -1,0 +1,47 @@
+name: Publish on Docker Hub and Deploy
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.20'
+    
+    - name: Verify dependencies
+      run: go mod verify
+        
+    - name: Run go vet
+      run: go vet ./...
+    
+    - name: Install golint
+      run: go install golang.org/x/lint/golint@latest
+    
+    - name: Run golint
+      run: golint ./...
+    
+    - name: Run testing
+      run: go test -race ./...
+  
+  build_and_pub:
+    needs: [test]
+    runs-on: ubuntu-latest
+    env:
+      LOGIN: ${{ secrets.DOCKER_LOGIN }}
+      NAME: ${{ secrets.DOCKER_NAME }}
+    steps:
+      - name: Login to docker.io
+        run:  echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_LOGIN }} --password-stdin
+      - uses: actions/checkout@v3
+      - name: Build image
+        run: docker build -t $LOGIN/$NAME:${GITHUB_REF:11} -f Dockerfile .
+      - name: Push image to docker.io
+        run: docker push $LOGIN/$NAME:${GITHUB_REF:11}
