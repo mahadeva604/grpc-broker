@@ -60,9 +60,11 @@ jobs:
         known_hosts: ${{ secrets.KNOWN_HOSTS }}
         if_key_exists: fail
     - name: Deploy new docker image
-      run: |
+      run: >
         ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}
-        docker pull $LOGIN/$NAME:${GITHUB_REF:11}
-        docker stop grpc-broker || true
-        docker rm grpc-broker || true
-        docker run --name=grpc-broker --restart=always -p 8086:8086 -d $LOGIN/$NAME:${GITHUB_REF:11}
+        '
+        docker pull ${{ secrets.DOCKER_LOGIN }}/${{ secrets.DOCKER_NAME }}:${GITHUB_REF:11};
+        docker stop grpc-broker;
+        docker rm grpc-broker;
+        docker run --name=grpc-broker --restart=always -p 8086:8086 -d ${{ secrets.DOCKER_LOGIN }}/${{ secrets.DOCKER_NAME }}:${GITHUB_REF:11};
+        '
