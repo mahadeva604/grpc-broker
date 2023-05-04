@@ -49,6 +49,9 @@ jobs:
   deploy:
     needs: [build_and_pub]
     runs-on: ubuntu-latest
+    env:
+      LOGIN: ${{ secrets.DOCKER_LOGIN }}
+      NAME: ${{ secrets.DOCKER_NAME }}
     steps:
     - name: Install SSH key
       uses: shimataro/ssh-key-action@v2
