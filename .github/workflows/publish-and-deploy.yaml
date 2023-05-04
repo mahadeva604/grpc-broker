@@ -52,7 +52,9 @@ jobs:
     env:
       LOGIN: ${{ secrets.DOCKER_LOGIN }}
       NAME: ${{ secrets.DOCKER_NAME }}
-      VERSION: ${GITHUB_REF:11}
+      VERSION: $GITHUB_REF
+      VERSION1: $GITHUB_REF_NAME
+      VERSION2: ${{  github.ref_name }}
     steps:
     - name: Deploy new docker image
       uses: appleboy/ssh-action@v0.1.10
@@ -60,11 +62,13 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         host: ${{ secrets.REMOTE_HOST }}
         username: ${{ secrets.REMOTE_USER }}
-        envs: LOGIN,NAME,VERSION
+        envs: LOGIN,NAME,VERSION,VERSION1,VERSION2
         debug: true
         script: |
           echo $LOGIN/$NAME:$VERSION >> /tmp/debug
-          echo ${GITHUB_REF:11} >> /tmp/debug
+          echo $VERSION >> /tmp/debug
+          echo $VERSION1 >> /tmp/debug
+          echo $VERSION2 >> /tmp/debug
           docker pull $LOGIN/$NAME:$VERSION
           docker stop grpc-broker || true
           docker rm grpc-broker || true
