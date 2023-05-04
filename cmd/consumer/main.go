@@ -15,6 +15,7 @@ import (
 	"google.golang.org/grpc"
 )
 
+// ProcessMsg handler for incoming messages
 func ProcessMsg(messages <-chan broker.Message, ack chan<- struct{}, done <-chan struct{}) {
 	defer close(ack)
 

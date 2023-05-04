@@ -8,16 +8,19 @@ import (
 	"google.golang.org/grpc"
 )
 
+// Consumer object
 type Consumer struct {
 	target   string
 	grpcOpts []grpc.DialOption
 }
 
+// Message object
 type Message struct {
 	Key  string
 	Data []byte
 }
 
+// SubscribeOpts options for subscriber
 type SubscribeOpts struct {
 	Ctx     context.Context
 	Timeout time.Duration
@@ -25,6 +28,7 @@ type SubscribeOpts struct {
 	Handler func(<-chan Message, chan<- struct{}, <-chan struct{})
 }
 
+// NewSubscriber create new consumer object
 func NewSubscriber(taget string, grpcOpts ...grpc.DialOption) *Consumer {
 	return &Consumer{
 		target:   taget,
@@ -32,6 +36,7 @@ func NewSubscriber(taget string, grpcOpts ...grpc.DialOption) *Consumer {
 	}
 }
 
+// Subscribe subscribe to topic
 func (p *Consumer) Subscribe(opts SubscribeOpts) error {
 	ctx, cancel := context.WithTimeout(context.Background(), opts.Timeout)
 	defer cancel()

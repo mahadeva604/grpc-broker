@@ -13,17 +13,20 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
+// Publisher object
 type Publisher struct {
 	store ports.Storage
 	pb.UnimplementedPublisherServer
 }
 
+// NewPublisher create new publisher
 func NewPublisher(store ports.Storage) *Publisher {
 	return &Publisher{
 		store: store,
 	}
 }
 
+// Publish publish message to topic
 func (p *Publisher) Publish(ctx context.Context, req *pb.PublishRequest) (*emptypb.Empty, error) {
 	topicName := req.GetTopic()
 	if topicName == "" {

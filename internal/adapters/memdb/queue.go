@@ -7,12 +7,12 @@ import (
 	"github.com/mahadeva604/grpc-broker/internal/domain/models"
 )
 
-type MessageWithAck struct {
+type messageWithAck struct {
 	message *models.Message
 	ackFunc func()
 }
 
-type MessageQueue struct {
+type messageQueue struct {
 	mu            *sync.Mutex
 	isStopDequeue atomic.Bool
 	notFull       *sync.Cond
@@ -24,10 +24,10 @@ type MessageQueue struct {
 	ringBuffer    []*models.Message
 }
 
-func NewMessageQueue(buffLength int) *MessageQueue {
+func newMessageQueue(buffLength int) *messageQueue {
 	mu := &sync.Mutex{}
 
-	msgQueue := MessageQueue{
+	msgQueue := messageQueue{
 		mu:         mu,
 		ringBuffer: make([]*models.Message, buffLength),
 		buffLength: buffLength,
@@ -38,7 +38,7 @@ func NewMessageQueue(buffLength int) *MessageQueue {
 	return &msgQueue
 }
 
-func (q *MessageQueue) Enqueue(msg models.Message) {
+func (q *messageQueue) enqueue(msg models.Message) {
 	q.mu.Lock()
 
 	for q.currLength == q.buffLength {
@@ -59,7 +59,7 @@ func (q *MessageQueue) Enqueue(msg models.Message) {
 	q.mu.Unlock()
 }
 
-func (q *MessageQueue) Dequeue() MessageWithAck {
+func (q *messageQueue) dequeue() messageWithAck {
 	q.mu.Lock()
 	defer q.mu.Unlock()
 
@@ -68,22 +68,22 @@ func (q *MessageQueue) Dequeue() MessageWithAck {
 	}
 
 	if q.isStopDequeue.Load() {
-		return MessageWithAck{}
+		return messageWithAck{}
 	}
 
-	return MessageWithAck{q.ringBuffer[q.nextRead], q.ack}
+	return messageWithAck{q.ringBuffer[q.nextRead], q.ack}
 }
 
-func (q *MessageQueue) StopDequeue() {
+func (q *messageQueue) stopDequeue() {
 	q.isStopDequeue.Store(true)
 	q.notEmpty.Signal()
 }
 
-func (q *MessageQueue) ResetStopDequeue() {
+func (q *messageQueue) resetStopDequeue() {
 	q.isStopDequeue.Store(false)
 }
 
-func (q *MessageQueue) ack() {
+func (q *messageQueue) ack() {
 	q.mu.Lock()
 
 	q.nextRead++

@@ -8,11 +8,13 @@ import (
 	"github.com/mahadeva604/grpc-broker/internal/ports"
 )
 
+// Storage object f
 type Storage struct {
 	mu     sync.Mutex
 	topics map[string]*Topic
 }
 
+// NewStorage create new storage
 func NewStorage() *Storage {
 	return &Storage{
 		mu:     sync.Mutex{},
@@ -20,6 +22,7 @@ func NewStorage() *Storage {
 	}
 }
 
+// GreateTopic create new topic
 func (s *Storage) GreateTopic(topicName string, queueLength int) (ports.Topic, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -35,6 +38,7 @@ func (s *Storage) GreateTopic(topicName string, queueLength int) (ports.Topic, e
 	return newTopic, nil
 }
 
+// GetTopic get topic
 func (s *Storage) GetTopic(topicName string) (ports.Topic, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()

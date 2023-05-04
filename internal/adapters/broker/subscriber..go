@@ -10,17 +10,20 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// Subscriber object
 type Subscriber struct {
 	store ports.Storage
 	pb.UnimplementedSubscriberServer
 }
 
+// NewSubscriber create new subscriber
 func NewSubscriber(store ports.Storage) *Subscriber {
 	return &Subscriber{
 		store: store,
 	}
 }
 
+// Subscribe subscribe to topic
 func (s Subscriber) Subscribe(stream pb.Subscriber_SubscribeServer) error {
 	req, err := stream.Recv()
 	if err != nil {

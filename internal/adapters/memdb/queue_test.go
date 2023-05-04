@@ -18,7 +18,7 @@ type IndexRange struct {
 func TestQueue(t *testing.T) {
 	totalMessages := 1000
 	totalProducer := 4
-	queue := NewMessageQueue(100)
+	queue := newMessageQueue(100)
 
 	messages := genMessages(totalMessages)
 	indexRanges := genIndexRange(totalMessages, totalProducer)
@@ -33,7 +33,7 @@ func TestQueue(t *testing.T) {
 			indexRange := indexRanges[producerID]
 
 			for _, msg := range messages[indexRange.start:indexRange.end] {
-				queue.Enqueue(msg)
+				queue.enqueue(msg)
 			}
 		}(i)
 	}
@@ -47,10 +47,10 @@ func TestQueue(t *testing.T) {
 	go func() {
 		defer wgDequeue.Done()
 
-		queue.ResetStopDequeue()
+		queue.resetStopDequeue()
 
 		for {
-			msgWitchAck := queue.Dequeue()
+			msgWitchAck := queue.dequeue()
 			if msgWitchAck.message == nil {
 				return
 			}
@@ -60,7 +60,7 @@ func TestQueue(t *testing.T) {
 
 			// stop after half of expected messages
 			if len(gotMessages) == totalMessages/2 {
-				queue.StopDequeue()
+				queue.stopDequeue()
 			}
 		}
 	}()
@@ -72,10 +72,10 @@ func TestQueue(t *testing.T) {
 	go func() {
 		defer wgDequeue.Done()
 
-		queue.ResetStopDequeue()
+		queue.resetStopDequeue()
 
 		for {
-			msgWitchAck := queue.Dequeue()
+			msgWitchAck := queue.dequeue()
 			if msgWitchAck.message == nil {
 				return
 			}
@@ -87,7 +87,7 @@ func TestQueue(t *testing.T) {
 			if len(gotMessages) == totalMessages {
 				go func() {
 					time.Sleep(3 * time.Second)
-					queue.StopDequeue()
+					queue.stopDequeue()
 				}()
 			}
 		}
