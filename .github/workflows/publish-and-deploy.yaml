@@ -63,6 +63,7 @@ jobs:
         envs: LOGIN,NAME,VERSION
         debug: true
         script: |
+          echo $LOGIN/$NAME:$VERSION >> /tmp/debug
           docker pull $LOGIN/$NAME:$VERSION
           docker stop grpc-broker || true
           docker rm grpc-broker || true
