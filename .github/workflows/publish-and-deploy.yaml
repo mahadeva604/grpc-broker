@@ -61,9 +61,7 @@ jobs:
         host: ${{ secrets.REMOTE_HOST }}
         username: ${{ secrets.REMOTE_USER }}
         envs: LOGIN,NAME,VERSION
-        debug: true
         script: |
-          echo $LOGIN/$NAME:${VERSION:1} >> /tmp/debug
           docker pull $LOGIN/$NAME:${VERSION:1}
           docker stop grpc-broker || true
           docker rm grpc-broker || true
