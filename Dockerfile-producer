@@ -19,4 +19,4 @@ COPY --from=builder /grpc-broker-producer /grpc-broker-producer
 
 EXPOSE 8086
 
-CMD ["./grpc-broker-producer"]
+ENTRYPOINT ["./grpc-broker-producer"]
