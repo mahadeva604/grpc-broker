@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+option go_package = ".;broker";
+package broker;
+
+import "google/protobuf/empty.proto";
+
+service Subscriber {
+  rpc Subscribe(stream SubscribeRequest) returns (stream Message) {}
+}
+
+service Publisher {
+  rpc Publish(PublishRequest) returns (google.protobuf.Empty) {}
+}
+
+message SubscribeRequest {
+  oneof subscribe_request_type {
+    InitialRequest initial_request = 1;
+    AckReply ack_reply = 2;
+  }
+}
+
+message PublishRequest {
+    string topic = 1;
+    Message msg = 2;
+}
+
+message InitialRequest { string topic = 1; }
+
+message AckReply { string key = 1; }
+
+message Message {
+  string key = 1;
+  bytes data = 2;
+}
