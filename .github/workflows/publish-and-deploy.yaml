@@ -64,6 +64,7 @@ jobs:
         debug: true
         script: |
           echo $LOGIN/$NAME:$VERSION >> /tmp/debug
+          echo ${GITHUB_REF:11} >> /tmp/debug
           docker pull $LOGIN/$NAME:$VERSION
           docker stop grpc-broker || true
           docker rm grpc-broker || true
