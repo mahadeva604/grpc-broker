@@ -18,7 +18,7 @@ https://github.com/mahadeva604/grpc-broker/tree/main/pkg/api/broker
 
 Example of running grpc-broker server:
 ```
-docker run -p 8086:8086 --name=grpc-broker --restart=always -d mahadeva604/grpc-broker:0.0.2
+docker run -p 8086:8086 --name=grpc-broker --restart=always -d mahadeva604/grpc-broker:0.0.3
 ```
 
 Example of running grpc-broker consumer:
